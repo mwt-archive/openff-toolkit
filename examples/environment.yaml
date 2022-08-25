@@ -39,3 +39,5 @@ dependencies:
   - panedr
   # Add back when LAMMPS export is better
   # lammps
+  - pip:
+    - git+https://github.com/openforcefield/openff-interchange.git@main
