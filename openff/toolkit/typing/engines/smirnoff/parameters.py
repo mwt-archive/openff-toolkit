@@ -1799,8 +1799,6 @@ class ParameterHandler(_ParameterAttributeHandler):
     _INFOTYPE: Optional[Any] = None
     # OpenMM Force class (or None if no equivalent)
     _OPENMMTYPE: Optional[str] = None
-    # list of ParameterHandler classes that must precede this, or None
-    _DEPENDENCIES: Optional[Any] = None
 
     # Kwargs to catch when create_force is called
     _KWARGS: List[str] = []
@@ -2480,7 +2478,6 @@ class BondHandler(ParameterHandler):
     _TAGNAME = "Bonds"  # SMIRNOFF tag name to process
     _INFOTYPE = BondType  # class to hold force type info
     _OPENMMTYPE = "HarmonicBondForce"
-    _DEPENDENCIES = [ConstraintHandler]  # ConstraintHandler must be executed first
     _MAX_SUPPORTED_SECTION_VERSION = Version("0.4")
 
     # Use the _allow_only filter here because this class's implementation contains all the information about supported
@@ -2578,7 +2575,6 @@ class AngleHandler(ParameterHandler):
     _TAGNAME = "Angles"  # SMIRNOFF tag name to process
     _INFOTYPE = AngleType  # class to hold force type info
     _OPENMMTYPE = "HarmonicAngleForce"
-    _DEPENDENCIES = [ConstraintHandler]  # ConstraintHandler must be executed first
 
     potential = ParameterAttribute(default="harmonic")
 
@@ -2911,7 +2907,6 @@ class ElectrostaticsHandler(_NonbondedHandler):
     """
 
     _TAGNAME = "Electrostatics"
-    _DEPENDENCIES = [vdWHandler]
     _KWARGS = ["charge_from_molecules"]
     _MAX_SUPPORTED_SECTION_VERSION = Version("0.4")
 
@@ -3156,7 +3151,6 @@ class LibraryChargeHandler(_NonbondedHandler):
 
     _TAGNAME = "LibraryCharges"  # SMIRNOFF tag name to process
     _INFOTYPE = LibraryChargeType  # info type to store
-    _DEPENDENCIES = [vdWHandler, ElectrostaticsHandler]
 
     def find_matches(self, entity, unique=False):
         """Find the elements of the topology/molecule matched by a parameter type.
@@ -3187,7 +3181,6 @@ class ToolkitAM1BCCHandler(_NonbondedHandler):
     """
 
     _TAGNAME = "ToolkitAM1BCC"  # SMIRNOFF tag name to process
-    _DEPENDENCIES = [vdWHandler, ElectrostaticsHandler, LibraryChargeHandler]
     _KWARGS = ["toolkit_registry"]  # Kwargs to catch when create_force is called
 
     def check_handler_compatibility(
@@ -3246,12 +3239,6 @@ class ChargeIncrementModelHandler(_NonbondedHandler):
 
     _TAGNAME = "ChargeIncrementModel"  # SMIRNOFF tag name to process
     _INFOTYPE = ChargeIncrementType  # info type to store
-    _DEPENDENCIES = [
-        vdWHandler,
-        ElectrostaticsHandler,
-        LibraryChargeHandler,
-        ToolkitAM1BCCHandler,
-    ]
     _MAX_SUPPORTED_SECTION_VERSION = Version("0.4")
 
     number_of_conformers = ParameterAttribute(default=1, converter=int)
@@ -3324,15 +3311,6 @@ class GBSAHandler(ParameterHandler):
     _TAGNAME = "GBSA"
     _INFOTYPE = GBSAType
     _OPENMMTYPE = "GBSAOBCForce"
-    # It's important that this runs AFTER partial charges are assigned to all particles, since this will need to
-    # collect and assign them to the GBSA particles
-    _DEPENDENCIES = [
-        vdWHandler,
-        ElectrostaticsHandler,
-        ToolkitAM1BCCHandler,
-        ChargeIncrementModelHandler,
-        LibraryChargeHandler,
-    ]
 
     gb_model = ParameterAttribute(
         default="OBC1", converter=_allow_only(["HCT", "OBC1", "OBC2"])
@@ -3569,13 +3547,6 @@ class VirtualSiteHandler(_NonbondedHandler):
     _TAGNAME = "VirtualSites"
     _INFOTYPE = VirtualSiteType
     _OPENMMTYPE = "NonbondedForce"
-    _DEPENDENCIES = [
-        ElectrostaticsHandler,
-        LibraryChargeHandler,
-        ChargeIncrementModelHandler,
-        ToolkitAM1BCCHandler,
-        vdWHandler,
-    ]
 
     exclusion_policy = ParameterAttribute(default="parents")
 
