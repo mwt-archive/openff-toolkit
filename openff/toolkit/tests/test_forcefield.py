@@ -1275,22 +1275,6 @@ class TestForceField:
             toolkit_registry=toolkit_registry,
         )
 
-    def test_parameterize_ethanol_missing_torsion(self):
-        from openff.toolkit.typing.engines.smirnoff.parameters import (
-            UnassignedProperTorsionParameterException,
-        )
-
-        forcefield = ForceField(xml_missing_torsion)
-        pdbfile = app.PDBFile(get_data_file_path("systems/test_systems/1_ethanol.pdb"))
-        molecules = [create_ethanol()]
-        topology = Topology.from_openmm(pdbfile.topology, unique_molecules=molecules)
-        with pytest.raises(
-            UnassignedProperTorsionParameterException,
-            match="- Topology indices [(]5, 0, 1, 6[)]: "
-            r"names and elements [(](H\d+)? H[)], [(](C\d+)? C[)], [(](C\d+)? C[)], [(](H\d+)? H[)],",
-        ):
-            forcefield.create_openmm_system(topology)
-
     @pytest.mark.parametrize("toolkit_registry", toolkit_registries)
     def test_parameterize_1_cyclohexane_1_ethanol(
         self,
@@ -1947,28 +1931,6 @@ class TestForceFieldChargeAssignment:
         for particle_index, expected_charge in expected_charges:
             q, _, _ = nonbondedForce.getParticleParameters(particle_index)
             assert q == expected_charge
-
-    @pytest.mark.parametrize("toolkit_registry", toolkit_registries)
-    def test_nonintegral_charge_exception(self, toolkit_registry):
-        # Create an ethanol molecule without using a toolkit
-        from openff.interchange.exceptions import NonIntegralMoleculeChargeException
-
-        ethanol = create_ethanol()
-        ethanol.partial_charges[0] = 1.0 * unit.elementary_charge
-
-        file_path = get_data_file_path("test_forcefields/test_forcefield.offxml")
-        forcefield = ForceField(file_path)
-        pdbfile = app.PDBFile(get_data_file_path("systems/test_systems/1_ethanol.pdb"))
-        topology = Topology.from_openmm(pdbfile.topology, unique_molecules=[ethanol])
-
-        with pytest.raises(
-            NonIntegralMoleculeChargeException, match="Molecule .* has a net charge"
-        ):
-            forcefield.create_openmm_system(
-                topology,
-                charge_from_molecules=[ethanol],
-                toolkit_registry=toolkit_registry,
-            )
 
     @pytest.mark.parametrize("toolkit_registry", toolkit_registries)
     def test_nonintegral_charge_override(self, toolkit_registry):

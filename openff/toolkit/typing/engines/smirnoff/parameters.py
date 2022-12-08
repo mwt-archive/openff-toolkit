@@ -16,11 +16,6 @@ __all__ = [
     "ParameterLookupError",
     "SMIRNOFFSpecError",
     "SMIRNOFFSpecUnimplementedError",
-    "UnassignedAngleParameterException",
-    "UnassignedBondParameterException",
-    "UnassignedMoleculeChargeException",
-    "UnassignedProperTorsionParameterException",
-    "UnassignedValenceParameterException",
     "ParameterList",
     "ParameterType",
     "ParameterHandler",
@@ -90,11 +85,6 @@ from openff.toolkit.utils.exceptions import (
     ParameterLookupError,
     SMIRNOFFSpecError,
     SMIRNOFFSpecUnimplementedError,
-    UnassignedAngleParameterException,
-    UnassignedBondParameterException,
-    UnassignedMoleculeChargeException,
-    UnassignedProperTorsionParameterException,
-    UnassignedValenceParameterException,
 )
 from openff.toolkit.utils.toolkits import GLOBAL_TOOLKIT_REGISTRY
 from openff.toolkit.utils.utils import object_to_quantity

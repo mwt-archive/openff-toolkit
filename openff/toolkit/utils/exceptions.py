@@ -240,26 +240,6 @@ class IncompatibleParameterError(OpenFFToolkitException):
     """
 
 
-class UnassignedValenceParameterException(OpenFFToolkitException):
-    """Exception raised when there are valence terms for which a ParameterHandler can't find parameters."""
-
-
-class UnassignedBondParameterException(UnassignedValenceParameterException):
-    """Exception raised when there are bond terms for which a ParameterHandler can't find parameters."""
-
-
-class UnassignedAngleParameterException(UnassignedValenceParameterException):
-    """Exception raised when there are angle terms for which a ParameterHandler can't find parameters."""
-
-
-class UnassignedProperTorsionParameterException(UnassignedValenceParameterException):
-    """Exception raised when there are proper torsion terms for which a ParameterHandler can't find parameters."""
-
-
-class UnassignedMoleculeChargeException(OpenFFToolkitException):
-    """Exception raised when no charge method is able to assign charges to a molecule."""
-
-
 class DuplicateParameterError(OpenFFToolkitException):
     """Exception raised when trying to add a ParameterType that already exists"""
 
